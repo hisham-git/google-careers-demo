@@ -8,17 +8,18 @@ import { homePage } from '@pages/HomePage'
 import { resultsPage } from '@pages/ResultsPage'
 import { jobDetailsPage } from '@pages/JobDetailsPage'
 
-Given("A web browser is at the google careers page", () => {
+Given("User is navigated to the google careers page", () => {
   cy.intercept({ resourceType: /xhr|fetch/ }, { log: false })
   cy.visit("/");
 });
 
-When("A user enters the role: {string}", (role) => {
-  homePage.typeAndSelectRole(role)
-});
-
-When("A user enters the location: {string}", (loc) => {
-  homePage.typeAndSelectLocation(loc)
+When("User type and select folowing data", (datatable) => {
+  datatable.hashes().forEach((data) => {
+    for (let field in data) {
+      let value = data[field]
+      homePage.typeAndSelectOption(field, value)
+    }
+  });
 });
 
 When("Clicks on the search button", () => {
@@ -26,7 +27,7 @@ When("Clicks on the search button", () => {
 });
 
 Then("User will be navigated to the results page", () => {
-  resultsPage.verifyResultsPageUrl
+  resultsPage.verifyResultsPageUrl()
 });
 
 Then("Verify results page has items", () => {
@@ -41,3 +42,7 @@ Then("Verify details page is visible", () => {
   jobDetailsPage.verifyJobTitleIsVisible()
   jobDetailsPage.verifyApplyBtnIsVisible()
 })
+
+When("Click Sort by {string} filter", (type) => {
+  resultsPage.sortItemsBy(type)
+});
